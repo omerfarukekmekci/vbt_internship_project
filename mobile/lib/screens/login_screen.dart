@@ -93,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 48,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange,
+                        backgroundColor: Colors.lightBlue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(24),
                         ),
@@ -105,38 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: const [
-                      Expanded(child: Divider()),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Text("Or Sign In With"),
-                      ),
-                      Expanded(child: Divider()),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
                   
-                  Container(
-                    width: double.infinity,
-                    child: Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 12,
-                        children: [
-                            OutlinedButton.icon(
-                                onPressed: () {},
-                                icon: const Icon(Icons.g_mobiledata),
-                                label: const Text("Google"),
-                            ),
-                            OutlinedButton.icon(
-                                onPressed: () {},
-                                icon: const Icon(Icons.facebook),
-                                label: const Text("Facebook"),
-                            ),
-                        ],
-                    ),
-                  ),
                   const Spacer(),
                   Center(
                     child: TextButton(
