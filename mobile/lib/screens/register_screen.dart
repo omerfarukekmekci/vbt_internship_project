@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -10,20 +12,60 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
-  bool _obscure = true;
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
 
-  void _register() {
+  bool _obscure = true;
+  bool _loading = false;
+
+  void _register() async {
     final email = _emailController.text;
     final password = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
+    final firstName = _firstNameController.text;
+    final lastName = _lastNameController.text;
+    final role = "User";
+
     if (password != confirmPassword) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
       return;
     }
-    print("Register Email: $email\nPassword: $password");
+
+    setState(() => _loading = true);
+
+    final url = Uri.parse('http://10.0.2.2:5248/auth/register');
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': email,
+        'password': password,
+        'role': role,
+      }),
+    );
+
+    setState(() => _loading = false);
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      final token = json['token'];
+      print("Token: $token");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Registration successful')));
+      Navigator.pop(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Registration failed: ${response.statusCode}')),
+      );
+    }
   }
 
   @override
@@ -45,7 +87,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 32,
+              ),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
                   minHeight: size.height - MediaQuery.of(context).padding.top,
@@ -74,7 +119,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             color: Colors.grey[700],
                           ),
                         ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: _firstNameController,
+                          decoration: InputDecoration(
+                            labelText: "First Name",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: _lastNameController,
+                          decoration: InputDecoration(
+                            labelText: "Last Name",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
                         TextField(
                           controller: _emailController,
                           decoration: InputDecoration(
@@ -95,7 +160,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscure ? Icons.visibility_off : Icons.visibility,
+                                _obscure
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
                               ),
                               onPressed: () {
                                 setState(() => _obscure = !_obscure);
@@ -114,7 +181,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscure ? Icons.visibility_off : Icons.visibility,
+                                _obscure
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
                               ),
                               onPressed: () {
                                 setState(() => _obscure = !_obscure);
@@ -133,11 +202,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 borderRadius: BorderRadius.circular(24),
                               ),
                             ),
-                            onPressed: _register,
-                            child: const Text(
-                              "Register",
-                              style: TextStyle(color: Colors.white),
-                            ),
+                            onPressed: _loading ? null : _register,
+                            child: _loading
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : const Text(
+                                    "Register",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                           ),
                         ),
                         const Spacer(),

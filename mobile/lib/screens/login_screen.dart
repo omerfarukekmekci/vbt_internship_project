@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'register_screen.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,11 +15,59 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscure = true;
+  bool _loading = false;
 
-  void _login() {
-    final email = _emailController.text;
-    final password = _passwordController.text;
-    print("Login Email: $email\nPassword: $password");
+  void _login() async {
+    setState(() => _loading = true);
+
+    final email = Uri.encodeQueryComponent(_emailController.text);
+    final password = Uri.encodeQueryComponent(_passwordController.text);
+
+    final url = Uri.parse(
+      'http://10.0.2.2:5248/auth/login?email=$email&password=$password',
+    );
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'accept': '*/*'},
+        body: '',
+      );
+
+      print("Response status: ${response.statusCode}");
+      print("Response body: ${response.body}");
+
+      setState(() => _loading = false);
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        final token = json['token'];
+        print("Token: $token");
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Login successful')));
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => HomeScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Login failed: ${response.statusCode}\nDetails: ${response.body}',
+            ),
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    } catch (e, stacktrace) {
+      setState(() => _loading = false);
+      print("Exception during login: $e");
+      print(stacktrace);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Login exception: $e')));
+    }
   }
 
   @override
@@ -27,7 +78,6 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background image from İrem's page
           Positioned.fill(
             child: Opacity(
               opacity: 0.4,
@@ -37,10 +87,12 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          // Foreground
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 32,
+              ),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
                   minHeight: size.height - MediaQuery.of(context).padding.top,
@@ -78,6 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
+                          keyboardType: TextInputType.emailAddress,
                         ),
                         const SizedBox(height: 16),
                         TextField(
@@ -90,7 +143,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscure ? Icons.visibility_off : Icons.visibility,
+                                _obscure
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
                               ),
                               onPressed: () {
                                 setState(() => _obscure = !_obscure);
@@ -117,14 +172,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                 borderRadius: BorderRadius.circular(24),
                               ),
                             ),
-                            onPressed: _login,
-                            child: const Text(
-                              "Sign In",
-                              style: TextStyle(color: Colors.white),
-                            ),
+                            onPressed: _loading ? null : _login,
+                            child: _loading
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : const Text(
+                                    "Sign In",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                           ),
                         ),
-                        
                         const Spacer(),
                         Center(
                           child: TextButton(
