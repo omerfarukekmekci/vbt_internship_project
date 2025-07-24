@@ -18,8 +18,8 @@ namespace InternshipProject
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllers();
-
             builder.Services.AddEndpointsApiExplorer();
+
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new() { Title = "InternshipProject", Version = "v1" });
@@ -31,27 +31,38 @@ namespace InternshipProject
                     Scheme = "bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Description = "JWT Authorization: Bearer {token}"
+                    Description = "JWT Authorization Ekraný",
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
                 };
 
                 c.AddSecurityDefinition("Bearer", securityScheme);
+
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
-                    { securityScheme, Array.Empty<string>() }
+                    {
+                        securityScheme,
+                        new string[] {}
+                    }
                 });
             });
+
+            builder.Services.AddDbContext<InternPortalContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IAuthService, AuthService>();
 
-            var jwtKey = builder.Configuration["Jwt:Key"];
+            var jwtKey = builder.Configuration["Jwt:Key"] ?? "fallback-key";
             var jwtIssuer = builder.Configuration["Jwt:Issuer"];
             var jwtAudience = builder.Configuration["Jwt:Audience"];
             var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
-            var securityKey = new SymmetricSecurityKey(keyBytes);
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+                .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -60,14 +71,11 @@ namespace InternshipProject
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = jwtIssuer,
                         ValidAudience = jwtAudience,
-                        IssuerSigningKey = securityKey
+                        IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
                     };
                 });
 
             builder.Services.AddAuthorization();
-
-            builder.Services.AddDbContext<InternPortalContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddCors(options =>
             {
@@ -90,8 +98,8 @@ namespace InternshipProject
 
             app.UseHttpsRedirection();
             app.UseCors("AllowFrontend");
-            app.UseAuthentication();
-            app.UseAuthorization();
+            app.UseAuthentication(); 
+            app.UseAuthorization();  
             app.MapControllers();
             app.Run();
         }

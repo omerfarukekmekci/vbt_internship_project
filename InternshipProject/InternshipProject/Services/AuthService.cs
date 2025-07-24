@@ -30,7 +30,7 @@ namespace InternshipProject.Services.concretes
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Email = model.Email,
-                PasswordHash = model.Password, 
+                PasswordHash = model.Password,
                 Role = "User"
             };
 
@@ -40,19 +40,35 @@ namespace InternshipProject.Services.concretes
             return GenerateJwtToken(user);
         }
 
-        public async Task<string?> Login(string email, string password)
+        public async Task<string?> Login(LoginRequestModel model)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email && x.PasswordHash == password);
-            if (user == null) return null;
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.Email == model.Email && x.PasswordHash == model.Password);
+
+            if (user == null)
+                return null;
 
             return GenerateJwtToken(user);
         }
 
+        public async Task<bool> ResetPassword(ResetPasswordRequestModel model)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == model.Email);
+            if (user == null)
+                return false;
+
+            user.PasswordHash = model.NewPassword;
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+
         private string GenerateJwtToken(User user)
         {
-            var jwtKey = _configuration["Jwt:Key"] ?? "vbt_internship_project_group3_secret_key_2025!";
-            var jwtIssuer = _configuration["Jwt:Issuer"] ?? "internproject";
-            var jwtAudience = _configuration["Jwt:Audience"] ?? "internproject";
+            var jwtKey = _configuration["Jwt:Key"] ?? "default_key";
+            var jwtIssuer = _configuration["Jwt:Issuer"] ?? "default_issuer";
+            var jwtAudience = _configuration["Jwt:Audience"] ?? "default_audience";
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -69,12 +85,11 @@ namespace InternshipProject.Services.concretes
                 issuer: jwtIssuer,
                 audience: jwtAudience,
                 claims: claims,
-                expires: DateTime.Now.AddHours(2),
+                expires: DateTime.UtcNow.AddHours(2),
                 signingCredentials: creds
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
     }
 }

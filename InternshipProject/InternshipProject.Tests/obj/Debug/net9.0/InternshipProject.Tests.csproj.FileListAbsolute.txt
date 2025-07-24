@@ -463,3 +463,6 @@ C:\Users\demir\Documents\recentProject\vbt_internship_project\InternshipProject\
 C:\Users\demir\Documents\recentProject\vbt_internship_project\InternshipProject\InternshipProject.Tests\obj\Debug\net9.0\InternshipProject.Tests.pdb
 C:\Users\demir\Documents\recentProject\vbt_internship_project\InternshipProject\InternshipProject.Tests\obj\Debug\net9.0\InternshipProject.Tests.genruntimeconfig.cache
 C:\Users\demir\Documents\recentProject\vbt_internship_project\InternshipProject\InternshipProject.Tests\obj\Debug\net9.0\ref\InternshipProject.Tests.dll
+C:\Users\Laptop Dunyası\Source\Repos\vbt_internship_project\InternshipProject\InternshipProject.Tests\obj\Debug\net9.0\InternshipProject.Tests.dll
+C:\Users\Laptop Dunyası\Source\Repos\vbt_internship_project\InternshipProject\InternshipProject.Tests\obj\Debug\net9.0\refint\InternshipProject.Tests.dll
+C:\Users\Laptop Dunyası\Source\Repos\vbt_internship_project\InternshipProject\InternshipProject.Tests\obj\Debug\net9.0\InternshipProject.Tests.pdb

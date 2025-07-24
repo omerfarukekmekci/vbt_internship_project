@@ -8,14 +8,9 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "email",
-        "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "password",
-        "Type": "System.String",
-        "IsRequired": false
+        "Name": "model",
+        "Type": "InternshipProject.Models.LoginRequestModel",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []
@@ -31,6 +26,22 @@
       {
         "Name": "model",
         "Type": "InternshipProject.Models.RegisterRequestModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternshipProject.Controllers.AuthController",
+    "Method": "ResetPassword",
+    "RelativePath": "auth/reset-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "InternshipProject.Models.ResetPasswordRequestModel",
         "IsRequired": true
       }
     ],

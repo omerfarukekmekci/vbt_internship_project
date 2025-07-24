@@ -27,15 +27,31 @@ namespace InternshipProject.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromQuery] string email, [FromQuery] string password)
+        public async Task<IActionResult> Login([FromBody] LoginRequestModel model)
         {
-            var token = await _authService.Login(email, password);
+            var token = await _authService.Login(model);
             if (token == null)
                 return Unauthorized("Geçersiz e-posta ya da şifre.");
 
             return Ok(new { token });
         }
 
-        
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestModel model)
+        {
+            var result = await _authService.ResetPassword(model);
+            if (!result)
+                return NotFound("Kullanıcı bulunamadı.");
+
+            return Ok("Şifre güncellendi.");
+        }
+
+
+        [Authorize]
+        [HttpGet("test")]
+        public IActionResult Test()
+        {
+            return Ok(" JWT ile erişim sağlandı.");
+        }
     }
 }
