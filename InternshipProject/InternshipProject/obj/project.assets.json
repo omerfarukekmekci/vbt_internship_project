@@ -3220,11 +3220,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Laptop Dunyası\\source\\repos\\vbt_internship_project\\InternshipProject\\InternshipProject\\InternshipProject.csproj",
+      "projectUniqueName": "C:\\Users\\Laptop Dunyası\\Source\\Repos\\vbt_internship_project\\InternshipProject\\InternshipProject\\InternshipProject.csproj",
       "projectName": "InternshipProject",
-      "projectPath": "C:\\Users\\Laptop Dunyası\\source\\repos\\vbt_internship_project\\InternshipProject\\InternshipProject\\InternshipProject.csproj",
+      "projectPath": "C:\\Users\\Laptop Dunyası\\Source\\Repos\\vbt_internship_project\\InternshipProject\\InternshipProject\\InternshipProject.csproj",
       "packagesPath": "C:\\Users\\Laptop Dunyası\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Laptop Dunyası\\source\\repos\\vbt_internship_project\\InternshipProject\\InternshipProject\\obj\\",
+      "outputPath": "C:\\Users\\Laptop Dunyası\\Source\\Repos\\vbt_internship_project\\InternshipProject\\InternshipProject\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -3309,7 +3309,7 @@
       "code": "NU1900",
       "level": "Warning",
       "warningLevel": 1,
-      "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://nuget.telerik.com/v3/index.json."
+      "message": "Paket güvenlik açığı verileri alınırken hata oluştu: https://nuget.telerik.com/v3/index.json kaynağı için hizmet dizini yüklenemiyor."
     }
   ]
 }
