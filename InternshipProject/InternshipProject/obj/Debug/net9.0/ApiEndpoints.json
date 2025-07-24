@@ -35,5 +35,15 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "InternshipProject.Controllers.AuthController",
+    "Method": "Test",
+    "RelativePath": "auth/test",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
   }
 ]
