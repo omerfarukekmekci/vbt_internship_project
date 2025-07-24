@@ -59,3 +59,74 @@ mobile/
 ├── pubspec.yaml
 ├── README.md
 
+--------------
+Backend için SQL Server Kurulumu ve LocalDB Kullanımı
+1. SQL Server LocalDB Nedir?
+LocalDB, SQL Server’ın hafif, kolay kurulan bir versiyonudur.
+
+Geliştirme ve test amaçlı kullanılır, tam SQL Server kurulumu gerektirmez.
+
+Projede LocalDB kullanılmışsa, kurulumu oldukça basittir.
+
+2. LocalDB Kurulumu
+Adım 1: SQL Server Express LocalDB’yi indir
+Microsoft’un resmi sitesinden SQL Server Express 2019 veya 2022 indir.
+
+Kurulum sırasında sadece “LocalDB” özelliğini seç.
+
+Adım 2: LocalDB’yi kontrol et
+Komut satırını aç (CMD veya PowerShell)
+
+sqllocaldb info yaz ve Enter’a bas.
+
+Eğer LocalDB kuruluysa, mevcut instance’lar listelenir (örn. MSSQLLocalDB)
+
+Adım 3: LocalDB instance başlat (gerekirse)
+sqllocaldb start MSSQLLocalDB komutu ile LocalDB’yi başlatabilirsin.
+
+Adım 4: Bağlantı string’i
+Projede bağlantı stringi şöyle olur:
+Server=(localdb)\MSSQLLocalDB;Database=InternPortalDb;Trusted_Connection=True;
+Bu string, projenin appsettings.json veya appsettings.Development.json içinde tanımlı olmalı.
+
+
+3. Tam SQL Server Kurulumu (Opsiyonel)
+Adım 1: SQL Server Express veya Developer Edition’ı indir
+SQL Server Express veya Developer Edition’ı indirip kur.
+
+Adım 2: SQL Server Management Studio (SSMS) indir
+Veritabanlarını yönetmek için SSMS yükle.
+
+Adım 3: Veritabanı oluştur
+SSMS ile SQL Server’a bağlan, yeni bir veritabanı oluştur (örneğin InternPortalDb).
+
+Adım 4: Connection string ayarla
+Projede connection string olarak şunu kullanabilirsin:
+Server=localhost;Database=InternPortalDb;Trusted_Connection=True;
+
+
+
+4. Ek Notlar
+Backend projesini açtıktan sonra, Entity Framework migration’larını çalıştırarak veritabanını otomatik oluşturabilir.
+Örnek komutlar:
+dotnet ef database update
+Eğer migration yoksa, öncelikle migration oluştur:
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+Bunları yapabilmek için .NET SDK ve EF Core CLI yüklü olmalı.
+
+
+
+--------------,
+
+📸 Screenshots
+
+[Login Screen](assets/login.png)
+
+[Register Screen](assets/register.png)
+
+[Home Screen](assets/home.png)
+
+-------------
+
+
