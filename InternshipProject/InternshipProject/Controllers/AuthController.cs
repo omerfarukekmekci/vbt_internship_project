@@ -1,5 +1,6 @@
 ﻿using InternshipProject.Models;
 using InternshipProject.Services.abstracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InternshipProject.Controllers
@@ -19,15 +20,22 @@ namespace InternshipProject.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterRequestModel model)
         {
             var token = await _authService.Register(model);
-            return token == null ? BadRequest("Kayıt başarısız.") : Ok(new { token });
-        }
+            if (token == null)
+                return BadRequest("Kayıt başarısız.");
 
+            return Ok(new { token });
+        }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromQuery] string email, [FromQuery] string password)
         {
             var token = await _authService.Login(email, password);
-            return token == null ? Unauthorized("Geçersiz bilgiler.") : Ok(new { token });
+            if (token == null)
+                return Unauthorized("Geçersiz e-posta ya da şifre.");
+
+            return Ok(new { token });
         }
+
+        
     }
 }
