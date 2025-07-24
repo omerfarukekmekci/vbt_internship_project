@@ -117,21 +117,25 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: 12,
-                    children: [
-                      OutlinedButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.g_mobiledata),
-                        label: const Text("Google"),
-                      ),
-                      OutlinedButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.facebook),
-                        label: const Text("Facebook"),
-                      ),
-                    ],
+                  
+                  Container(
+                    width: double.infinity,
+                    child: Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 12,
+                        children: [
+                            OutlinedButton.icon(
+                                onPressed: () {},
+                                icon: const Icon(Icons.g_mobiledata),
+                                label: const Text("Google"),
+                            ),
+                            OutlinedButton.icon(
+                                onPressed: () {},
+                                icon: const Icon(Icons.facebook),
+                                label: const Text("Facebook"),
+                            ),
+                        ],
+                    ),
                   ),
                   const Spacer(),
                   Center(
