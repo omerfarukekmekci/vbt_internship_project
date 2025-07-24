@@ -12,7 +12,7 @@ namespace InternshipProject
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            
+
             builder.Services.AddControllers();
             builder.Services.AddOpenApi();
 
@@ -24,6 +24,15 @@ namespace InternshipProject
 
             builder.Services.AddDbContext<InternPortalContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend",
+                    builder => builder.WithOrigins("http://localhost:5173")
+                                        .AllowAnyHeader()
+                                        .AllowAnyMethod()
+                                        .AllowCredentials());
+            });
 
 
             var app = builder.Build();
@@ -38,6 +47,7 @@ namespace InternshipProject
 
             app.UseHttpsRedirection();
             app.UseAuthorization();
+            app.UseCors("AllowFrontend");
             app.MapControllers();
 
             app.Run();

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "hFR9TkfwKrw=",
+  "dgSpecHash": "7LIR5e7yjRU=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Laptop Dunyası\\OneDrive\\Masaüstü\\InternshipProject\\InternshipProject\\InternshipProject.csproj",
+  "projectFilePath": "C:\\Users\\Laptop Dunyası\\Source\\Repos\\vbt_internship_project\\InternshipProject\\InternshipProject\\InternshipProject.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Laptop Dunyası\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Laptop Dunyası\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
@@ -72,9 +72,9 @@
       "code": "NU1900",
       "level": "Warning",
       "message": "Paket güvenlik açığı verileri alınırken hata oluştu: https://nuget.telerik.com/v3/index.json kaynağı için hizmet dizini yüklenemiyor.",
-      "projectPath": "C:\\Users\\Laptop Dunyası\\OneDrive\\Masaüstü\\InternshipProject\\InternshipProject\\InternshipProject.csproj",
+      "projectPath": "C:\\Users\\Laptop Dunyası\\Source\\Repos\\vbt_internship_project\\InternshipProject\\InternshipProject\\InternshipProject.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\Laptop Dunyası\\OneDrive\\Masaüstü\\InternshipProject\\InternshipProject\\InternshipProject.csproj",
+      "filePath": "C:\\Users\\Laptop Dunyası\\Source\\Repos\\vbt_internship_project\\InternshipProject\\InternshipProject\\InternshipProject.csproj",
       "targetGraphs": []
     }
   ]
