@@ -13,8 +13,11 @@ dependencies:
 
   cupertino_icons: ^1.0.8
 
-  # http paketi eklendi
   http: ^0.13.6
+  shared_preferences: ^2.2.2
+
+
+  provider: ^6.1.2
 
 dev_dependencies:
   flutter_test:

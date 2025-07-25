@@ -10,22 +10,21 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
 
   bool _obscure = true;
   bool _loading = false;
 
-  void _register() async {
-    final email = _emailController.text;
+  Future<void> _register() async {
+    final email = _emailController.text.trim();
     final password = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
-    final firstName = _firstNameController.text;
-    final lastName = _lastNameController.text;
+    final firstName = _firstNameController.text.trim();
+    final lastName = _lastNameController.text.trim();
     final role = "User";
 
     if (password != confirmPassword) {
@@ -39,32 +38,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     final url = Uri.parse('http://10.0.2.2:5248/auth/register');
 
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'firstName': firstName,
-        'lastName': lastName,
-        'email': email,
-        'password': password,
-        'role': role,
-      }),
-    );
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'firstName': firstName,
+          'lastName': lastName,
+          'email': email,
+          'password': password,
+          'role': role,
+        }),
+      );
 
-    setState(() => _loading = false);
+      setState(() => _loading = false);
 
-    if (response.statusCode == 200) {
-      final json = jsonDecode(response.body);
-      final token = json['token'];
-      print("Token: $token");
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        final token = json['token'];
+        debugPrint("Token: $token");
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registration successful')),
+        );
+
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Registration failed: ${response.statusCode}'),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() => _loading = false);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Registration successful')));
-      Navigator.pop(context);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Registration failed: ${response.statusCode}')),
-      );
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
@@ -120,78 +130,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        TextField(
-                          controller: _firstNameController,
-                          decoration: InputDecoration(
-                            labelText: "First Name",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
+                        _buildTextField(_firstNameController, "First Name"),
                         const SizedBox(height: 16),
-                        TextField(
-                          controller: _lastNameController,
-                          decoration: InputDecoration(
-                            labelText: "Last Name",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
+                        _buildTextField(_lastNameController, "Last Name"),
                         const SizedBox(height: 16),
-                        TextField(
-                          controller: _emailController,
-                          decoration: InputDecoration(
-                            labelText: "Email Address",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
+                        _buildTextField(_emailController, "Email Address"),
                         const SizedBox(height: 16),
-                        TextField(
-                          controller: _passwordController,
-                          obscureText: _obscure,
-                          decoration: InputDecoration(
-                            labelText: "Password",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscure
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                              ),
-                              onPressed: () {
-                                setState(() => _obscure = !_obscure);
-                              },
-                            ),
-                          ),
-                        ),
+                        _buildPasswordField(_passwordController, "Password"),
                         const SizedBox(height: 16),
-                        TextField(
-                          controller: _confirmPasswordController,
-                          obscureText: _obscure,
-                          decoration: InputDecoration(
-                            labelText: "Confirm Password",
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscure
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                              ),
-                              onPressed: () {
-                                setState(() => _obscure = !_obscure);
-                              },
-                            ),
-                          ),
+                        _buildPasswordField(
+                          _confirmPasswordController,
+                          "Confirm Password",
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 24),
                         SizedBox(
                           width: double.infinity,
                           height: 48,
@@ -216,9 +167,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const Spacer(),
                         Center(
                           child: TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
+                            onPressed: () => Navigator.pop(context),
                             child: const Text.rich(
                               TextSpan(
                                 text: "Already have an account? ",
@@ -241,6 +190,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTextField(TextEditingController controller, String label) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+  }
+
+  Widget _buildPasswordField(TextEditingController controller, String label) {
+    return TextField(
+      controller: controller,
+      obscureText: _obscure,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        suffixIcon: IconButton(
+          icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
+          onPressed: () => setState(() => _obscure = !_obscure),
+        ),
       ),
     );
   }

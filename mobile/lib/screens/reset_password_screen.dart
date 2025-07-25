@@ -1,75 +1,72 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import 'register_screen.dart';
-import 'home_screen.dart';
-import 'reset_password_screen.dart';
-import '../auth_provider.dart';
-
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class ResetPasswordScreen extends StatefulWidget {
+  const ResetPasswordScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+
   bool _obscure = true;
   bool _loading = false;
 
-  void _login() async {
+  void _resetPassword() async {
+    final email = _emailController.text;
+    final password = _passwordController.text;
+    final confirmPassword = _confirmPasswordController.text;
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Passwords do not match')),
+      );
+      return;
+    }
+
     setState(() => _loading = true);
 
-    final url = Uri.parse('http://10.0.2.2:5248/auth/login');
+    final url = Uri.parse('http://10.0.2.2:5248/auth/reset-password');
 
     try {
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json', 'Accept': '*/*'},
+        headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'email': _emailController.text.trim(),
-          'password': _passwordController.text,
+          'email': email,
+          'newPassword': password,
         }),
       );
 
-      print("Response status: ${response.statusCode}");
-      print("Response body: ${response.body}");
-
-      setState(() => _loading = false);
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-        final token = json['token'];
-        print("Token: $token");
-
-        final authProvider = Provider.of<AuthProvider>(context, listen: false);
-        await authProvider.login(token);
-
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Login successful')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Password reset successful')),
+        );
+        Navigator.pop(context);
+      } else if (response.statusCode == 404) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User not found')),
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Login failed: ${response.statusCode}\nDetails: ${response.body}',
-            ),
-            duration: const Duration(seconds: 5),
-          ),
+          SnackBar(content: Text('Reset failed: ${response.statusCode}')),
         );
       }
-    } catch (e, stacktrace) {
+    } catch (e) {
+      print('Exception during password reset: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    } finally {
       setState(() => _loading = false);
-      print("Exception during login: $e");
-      print(stacktrace);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Login exception: $e')));
     }
   }
 
@@ -112,19 +109,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         const SizedBox(height: 32),
                         Text(
-                          "Login Account",
+                          "Reset Password",
                           style: theme.textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "Hello, you must login first to be able to use the app and enjoy all features.",
+                          "Enter your email and new password to reset your account password.",
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: Colors.grey[700],
                           ),
                         ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 16),
                         TextField(
                           controller: _emailController,
                           decoration: InputDecoration(
@@ -133,22 +130,19 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          keyboardType: TextInputType.emailAddress,
                         ),
                         const SizedBox(height: 16),
                         TextField(
                           controller: _passwordController,
                           obscureText: _obscure,
                           decoration: InputDecoration(
-                            labelText: "Password",
+                            labelText: "New Password",
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscure
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
+                                _obscure ? Icons.visibility_off : Icons.visibility,
                               ),
                               onPressed: () {
                                 setState(() => _obscure = !_obscure);
@@ -156,19 +150,23 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const ResetPasswordScreen(),
-                                ),
-                              );
-                            },
-                            child: const Text("Forgot Password?"),
+                        const SizedBox(height: 16),
+                        TextField(
+                          controller: _confirmPasswordController,
+                          obscureText: _obscure,
+                          decoration: InputDecoration(
+                            labelText: "Confirm New Password",
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscure ? Icons.visibility_off : Icons.visibility,
+                              ),
+                              onPressed: () {
+                                setState(() => _obscure = !_obscure);
+                              },
+                            ),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -182,13 +180,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                 borderRadius: BorderRadius.circular(24),
                               ),
                             ),
-                            onPressed: _loading ? null : _login,
+                            onPressed: _loading ? null : _resetPassword,
                             child: _loading
                                 ? const CircularProgressIndicator(
                                     color: Colors.white,
                                   )
                                 : const Text(
-                                    "Sign In",
+                                    "Reset Password",
                                     style: TextStyle(color: Colors.white),
                                   ),
                           ),
@@ -197,19 +195,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         Center(
                           child: TextButton(
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const RegisterScreen(),
-                                ),
-                              );
+                              Navigator.pop(context);
                             },
                             child: const Text.rich(
                               TextSpan(
-                                text: "Don't have an account? ",
+                                text: "Remembered your password? ",
                                 children: [
                                   TextSpan(
-                                    text: "Join Us",
+                                    text: "Login",
                                     style: TextStyle(color: Colors.orange),
                                   ),
                                 ],
@@ -229,4 +222,4 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-}
+} 
