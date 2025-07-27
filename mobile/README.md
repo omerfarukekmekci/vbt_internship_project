@@ -116,7 +116,6 @@ dotnet ef database update
 Bunları yapabilmek için .NET SDK ve EF Core CLI yüklü olmalı.
 
 
-
 --------------,
 
 📸 Screenshots
